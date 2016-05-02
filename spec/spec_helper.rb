@@ -7,7 +7,8 @@ end
 
 # Configure Rails Environment
 ENV["RAILS_ENV"] = "test"
-
+require 'dotenv'
+Dotenv.load
 require "spree"
 
 begin
@@ -35,6 +36,8 @@ Dir[File.join(File.dirname(__FILE__), "support/**/*.rb")].each {|f| require f }
 
 FactoryGirl.definition_file_paths = %w{./spec/factories}
 FactoryGirl.find_definitions
+
+Capybara.javascript_driver = :selenium
 
 RSpec.configure do |config|
   RSpec::Matchers.define_negated_matcher :keep, :change
@@ -65,11 +68,19 @@ RSpec.configure do |config|
   end
 end
 
+ENV["ADYEN_API_PASSWORD"] ||= "fake_api_password"
+ENV["ADYEN_API_USERNAME"] ||= "fake_api_username"
+ENV["ADYEN_MERCHANT_ACCOUNT"] ||= "fake_api_merchant_account"
+ENV["ADYEN_CSE_LIBRARY_LOCATION"] ||= "test-adyen-encrypt.js"
+
 VCR.configure do |c|
   # c.allow_http_connections_when_no_cassette = true
   c.ignore_localhost = true
   c.cassette_library_dir = "spec/cassettes"
   c.hook_into :webmock
+  c.filter_sensitive_data('<ADYEN_API_PASSWORD>') { Rack::Utils.escape(ENV["ADYEN_API_PASSWORD"]) }
+  c.filter_sensitive_data('<ADYEN_API_USERNAME>') { Rack::Utils.escape(ENV["ADYEN_API_USERNAME"]) }
+  c.filter_sensitive_data('<ADYEN_MERCHANT_ACCOUNT>') { ENV["ADYEN_MERCHANT_ACCOUNT"] }
 end
 
 Shoulda::Matchers.configure do |config|

@@ -1,8 +1,10 @@
+gem 'dotenv-rails', :groups => [:development, :test]
+
 source "https://rubygems.org"
 
 group :development, :test do
   gem "solidus"
-  gem "solidus_auth_devise", "~> 1.2.0"
+  gem "solidus_auth_devise"
 
   gem "pg"
   gem "mysql2"
@@ -14,7 +16,8 @@ group :test do
   gem "factory_girl"
   gem "timecop"
   gem "vcr"
-  gem "webmock"
+  gem "webmock", "~> 1.0"
+  gem "selenium-webdriver"
 end
 
 gemspec
